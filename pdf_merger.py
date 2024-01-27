@@ -1,5 +1,4 @@
 from PyPDF2 import PdfMerger
-from time import sleep
 import os
 from sys import argv
 
@@ -25,24 +24,34 @@ if len(argv) <= 1:
     input()
     exit(0)
 
-if os.path.isfile(f'{argv[1]}\merged-pdf.pdf'):
+target_dir = " ".join(argv[1:])
+
+if not os.path.exists(target_dir):
+    print(f'The specified target directory does not exist: {target_dir}')
+    print('Press enter to continue...')
+    input()
+    exit(0)
+
+merged_pdf_path = os.path.join(target_dir, 'merged-pdf.pdf')
+
+if os.path.isfile(merged_pdf_path):
     print('Merged file already exists on current directory...')
     print('Press enter to continue...')
     input()
     exit(0)
 
 merger = PdfMerger()
-for file in os.listdir(argv[1]):
+for file in os.listdir(target_dir):
     if file.endswith('.pdf'):
-        path = f'{argv[1]}\{file}'
+        path = os.path.join(target_dir, file)
         print(f'Merging - {path}...')
         merger.append(path)
 print('Files successfully merged!')
 try:
-    merger.write(f'{argv[1]}\merged-pdf.pdf')
-    print(f'Wrote file to {argv[1]}\merged-pdf.pdf')
+    merger.write(merged_pdf_path)
+    print(f'Wrote file to {merged_pdf_path}.')
 except Exception as e:
-    print(f'Error while trying to Write file to {argv[1]}\merged-pdf.pdf')
+    print(f'Error while trying to Write file to {merged_pdf_path}')
     print(f'Exception: {e}')
 finally:
     merger.close()
